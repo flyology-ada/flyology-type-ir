@@ -1,0 +1,29 @@
+name = "tests"
+description = "AUnit tests for flyology_type_ir"
+version = "0.1.0-dev"
+
+authors = ["Yurii Rashkovskii"]
+maintainers = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+maintainers-logins = ["yrashk"]
+licenses = "MIT"
+website = ""
+tags = []
+
+executables = ["tests"]
+
+[[actions]]
+type = "post-build"
+command = ["python3", "../scripts/check_fixtures.py"]
+
+[[actions]]
+type = "post-build"
+command = ["gprbuild", "-P", "../fixtures/fixtures.gpr", "-c", "-gnatc"]
+
+[[depends-on]]
+aunit = "^26.0.0"
+
+[[depends-on]]
+flyology_type_ir = "*"
+
+[[pins]]
+flyology_type_ir = { path='..' }

@@ -1,0 +1,14 @@
+/obj/
+/lib/
+/alire/
+/config/
+**/__pycache__/
+*.pyc
+*.ali
+*.o
+/.agents/
+/.claude/rules/
+/.claude/skills/
+
+# APM dependencies
+apm_modules/

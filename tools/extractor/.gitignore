@@ -1,0 +1,5 @@
+/alire/*
+!/alire/alire.lock
+/bin/
+/config/
+/obj/

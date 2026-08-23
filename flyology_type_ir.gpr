@@ -1,0 +1,31 @@
+with "config/flyology_type_ir_config.gpr";
+project Flyology_Type_Ir is
+
+   for Library_Name use "Flyology_Type_Ir";
+   for Library_Version use Project'Library_Name & ".so." & Flyology_Type_Ir_Config.Crate_Version;
+
+   for Source_Dirs use ("src/", "config/");
+   for Object_Dir use "obj/" & Flyology_Type_Ir_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("FLYOLOGY_TYPE_IR_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        Flyology_Type_Ir_Config.Ada_Compiler_Switches
+        & ("-gnat2022", "-gnatyM160");
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Install is
+      for Artifacts (".") use ("schema");
+   end Install;
+
+end Flyology_Type_Ir;

@@ -1,0 +1,10 @@
+name = "flyology_type_ir"
+description = "Shared offline semantic Ada Type IR and validation"
+version = "0.1.0-dev"
+
+authors = ["Yurii Rashkovskii"]
+maintainers = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+maintainers-logins = ["yrashk"]
+licenses = "MIT"
+website = "https://github.com/flyology-ada/flyology-type-ir"
+tags = ["ada", "semantics", "type-ir"]

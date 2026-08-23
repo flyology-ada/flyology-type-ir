@@ -1,0 +1,15 @@
+name = "flyology_type_ir_extractor"
+description = "Fail-closed Libadalang extraction boundary for Flyology Type IR"
+version = "0.1.0-dev"
+authors = ["Yurii Rashkovskii"]
+maintainers = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+maintainers-logins = ["yrashk"]
+licenses = "MIT"
+executables = ["flyology_type_ir_extract"]
+
+[[depends-on]]
+flyology_type_ir = "*"
+libadalang = "=26.0.0"
+
+[[pins]]
+flyology_type_ir = { path = "../.." }

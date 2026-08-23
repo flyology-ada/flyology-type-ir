@@ -1,0 +1,2524 @@
+{
+  "$defs": {
+    "annotation": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "type": "string"
+        },
+        "arguments": {
+          "items": {
+            "$ref": "#/$defs/typed_value"
+          },
+          "type": "array"
+        },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "expression_syntax": {
+          "oneOf": [
+            { "type": "null" },
+            { "minLength": 1, "type": "string" }
+          ]
+        },
+        "inherited": {
+          "type": "boolean"
+        },
+        "namespace": {
+          "pattern": "^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$",
+          "type": "string"
+        },
+        "target_id": {
+          "$ref": "#/$defs/semantic_id"
+        }
+      },
+      "required": [
+        "action",
+        "arguments",
+        "declaration_order",
+        "expression_syntax",
+        "inherited",
+        "namespace",
+        "target_id"
+      ],
+      "type": "object"
+    },
+    "array_dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "constraint": {
+          "$ref": "#/$defs/constraint"
+        },
+        "index_subtype": {
+          "$ref": "#/$defs/type_ref"
+        },
+        "position": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "constraint",
+        "index_subtype",
+        "position"
+      ],
+      "type": "object"
+    },
+    "choice": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "expression": {
+              "$ref": "#/$defs/expression"
+            },
+            "kind": {
+              "const": "expression"
+            },
+            "static_value": {
+              "$ref": "#/$defs/fact"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "expression",
+            "kind",
+            "static_value",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "name"
+            },
+            "resolved_declaration_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "static_value": {
+              "$ref": "#/$defs/fact"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "kind",
+            "resolved_declaration_id",
+            "static_value",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "subtype"
+            },
+            "resolved_subtype": {
+              "$ref": "#/$defs/type_ref"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "kind",
+            "resolved_subtype",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "high": {
+              "$ref": "#/$defs/expression"
+            },
+            "kind": {
+              "const": "range"
+            },
+            "low": {
+              "$ref": "#/$defs/expression"
+            },
+            "static_high": {
+              "$ref": "#/$defs/fact"
+            },
+            "static_low": {
+              "$ref": "#/$defs/fact"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "high",
+            "kind",
+            "low",
+            "static_high",
+            "static_low",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "others"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "kind",
+            "syntax"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "component": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_name": { "$ref": "#/$defs/canonical_segment" },
+        "aliased": {
+          "$ref": "#/$defs/boolean_fact"
+        },
+        "constant": {
+          "$ref": "#/$defs/boolean_fact"
+        },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "default": {
+          "$ref": "#/$defs/default_value"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "owner_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "type": {
+          "$ref": "#/$defs/type_ref"
+        },
+        "variant_path": {
+          "items": {
+            "$ref": "#/$defs/semantic_id"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "aliased",
+        "canonical_name",
+        "constant",
+        "declaration_order",
+        "default",
+        "name",
+        "owner_id",
+        "stable_id",
+        "type",
+        "variant_path"
+      ],
+      "type": "object"
+    },
+    "constraint": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "none"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "high": {
+              "$ref": "#/$defs/expression"
+            },
+            "kind": {
+              "const": "scalar_range"
+            },
+            "low": {
+              "$ref": "#/$defs/expression"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "provenance": {
+              "enum": [
+                "declared_subtype",
+                "inherited_base",
+                "use_site"
+              ]
+            },
+            "staticness": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "static_low": {
+              "$ref": "#/$defs/fact"
+            },
+            "static_high": {
+              "$ref": "#/$defs/fact"
+            }
+          },
+          "required": [
+            "high",
+            "kind",
+            "low",
+            "predicate",
+            "provenance",
+            "static_high",
+            "static_low",
+            "staticness"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "dimensions": {
+              "items": {
+                "$ref": "#/$defs/array_dimension"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "kind": {
+              "const": "array_indices"
+            },
+            "provenance": {
+              "enum": [
+                "declared_subtype",
+                "inherited_base",
+                "use_site"
+              ]
+            }
+          },
+          "required": [
+            "dimensions",
+            "kind",
+            "provenance"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "associations": {
+              "items": {
+                "$ref": "#/$defs/discriminant_association"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "kind": {
+              "const": "discriminants"
+            },
+            "provenance": {
+              "enum": [
+                "declared_subtype",
+                "inherited_base",
+                "use_site"
+              ]
+            }
+          },
+          "required": [
+            "associations",
+            "kind",
+            "provenance"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "digits": {
+              "$ref": "#/$defs/expression"
+            },
+            "kind": {
+              "const": "digits"
+            },
+            "provenance": {
+              "enum": [
+                "declared_subtype",
+                "inherited_base",
+                "use_site"
+              ]
+            },
+            "static_value": {
+              "$ref": "#/$defs/decimal_integer_fact"
+            }
+          },
+          "required": [
+            "digits",
+            "kind",
+            "provenance",
+            "static_value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "delta": {
+              "$ref": "#/$defs/expression"
+            },
+            "kind": {
+              "const": "delta"
+            },
+            "provenance": {
+              "enum": [
+                "declared_subtype",
+                "inherited_base",
+                "use_site"
+              ]
+            },
+            "small": {
+              "$ref": "#/$defs/exact_rational_fact"
+            },
+            "static_value": {
+              "$ref": "#/$defs/exact_rational_fact"
+            }
+          },
+          "required": [
+            "delta",
+            "kind",
+            "provenance",
+            "small",
+            "static_value"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "context": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "context_kind": { "const": "extraction" } },
+            "required": ["context_kind"]
+          },
+          "then": {
+            "properties": {
+              "canonical_gpr_path": { "pattern": "^/" },
+              "compiler_path": { "pattern": "^/" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "context_kind": { "const": "fixture" } },
+            "required": ["context_kind"]
+          },
+          "then": {
+            "properties": {
+              "canonical_gpr_path": { "const": "fixtures/fixtures.gpr" },
+              "compiler_path": { "const": "PATH:gprbuild" }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "accessibility_context": {
+          "additionalProperties": false,
+          "properties": {
+            "consumer_unit": { "$ref": "#/$defs/canonical_name" },
+            "derivation_unit": { "$ref": "#/$defs/canonical_name" },
+            "region": { "enum": ["body", "private_part", "public_spec"] }
+          },
+          "required": ["consumer_unit", "derivation_unit", "region"],
+          "type": "object"
+        },
+        "canonical_gpr_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "compiler_identity": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "compiler_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "context_kind": { "enum": ["extraction", "fixture"] },
+        "effective_project": {
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "closure_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "compiler_switches": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "configuration_pragmas": {
+              "items": {
+                "$ref": "#/$defs/source_digest"
+              },
+              "type": "array"
+            },
+            "project_files": {
+              "items": {
+                "$ref": "#/$defs/source_digest"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "runtime_sources": {
+              "items": {
+                "$ref": "#/$defs/source_digest"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "selected_units": {
+              "items": {
+                "$ref": "#/$defs/selected_source"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "algorithm",
+            "closure_digest",
+            "compiler_switches",
+            "configuration_pragmas",
+            "project_files",
+            "runtime_sources",
+            "selected_units"
+          ],
+          "type": "object"
+        },
+        "extractor_version": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "gnat_version": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "legality_check": {
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "additionalProperties": false,
+              "properties": {
+                "argv": {
+                  "items": { "type": "string" },
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "environment": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": { "pattern": "^[A-Za-z][A-Za-z0-9_]*$", "type": "string" },
+                      "value": { "type": "string" }
+                    },
+                    "required": ["name", "value"],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "tool_identity": { "minLength": 1, "type": "string" },
+                "working_directory": { "minLength": 1, "type": "string" }
+              },
+              "required": ["argv", "environment", "tool_identity", "working_directory"],
+              "type": "object"
+            },
+            "command_fingerprint": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "succeeded": {
+              "const": true
+            }
+          },
+          "required": [
+            "command",
+            "command_fingerprint",
+            "succeeded"
+          ],
+          "type": "object"
+        },
+        "libadalang_version": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "project_closure": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "project_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "requested_units": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "runtime_identity": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "scenario": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "target": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "accessibility_context",
+        "canonical_gpr_path",
+        "compiler_identity",
+        "compiler_path",
+        "context_kind",
+        "effective_project",
+        "extractor_version",
+        "gnat_version",
+        "legality_check",
+        "libadalang_version",
+        "project_closure",
+        "project_name",
+        "requested_units",
+        "runtime_identity",
+        "scenario",
+        "target"
+      ],
+      "type": "object"
+    },
+    "canonical_name": {
+      "pattern": "^(?!(?:abort|abs|abstract|accept|access|aliased|all|and|array|at|begin|body|case|constant|declare|delay|delta|digits|do|else|elsif|end|entry|exception|exit|for|function|generic|goto|if|in|interface|is|limited|loop|mod|new|not|null|of|or|others|out|overriding|package|parallel|pragma|private|procedure|protected|raise|range|record|rem|renames|requeue|return|reverse|select|separate|some|subtype|synchronized|tagged|task|terminate|then|type|until|use|when|while|with|xor)(?:\\.|$))[a-z](?:[a-z0-9]|_(?=[a-z0-9]))*(?:\\.(?!(?:abort|abs|abstract|accept|access|aliased|all|and|array|at|begin|body|case|constant|declare|delay|delta|digits|do|else|elsif|end|entry|exception|exit|for|function|generic|goto|if|in|interface|is|limited|loop|mod|new|not|null|of|or|others|out|overriding|package|parallel|pragma|private|procedure|protected|raise|range|record|rem|renames|requeue|return|reverse|select|separate|some|subtype|synchronized|tagged|task|terminate|then|type|until|use|when|while|with|xor)(?:\\.|$))[a-z](?:[a-z0-9]|_(?=[a-z0-9]))*)*$",
+      "type": "string"
+    },
+    "canonical_segment": {
+      "pattern": "^(?!(?:abort|abs|abstract|accept|access|aliased|all|and|array|at|begin|body|case|constant|declare|delay|delta|digits|do|else|elsif|end|entry|exception|exit|for|function|generic|goto|if|in|interface|is|limited|loop|mod|new|not|null|of|or|others|out|overriding|package|parallel|pragma|private|procedure|protected|raise|range|record|rem|renames|requeue|return|reverse|select|separate|some|subtype|synchronized|tagged|task|terminate|then|type|until|use|when|while|with|xor)$)[a-z](?:[a-z0-9]|_(?=[a-z0-9]))*$",
+      "type": "string"
+    },
+    "callable_parameter": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_name": { "$ref": "#/$defs/canonical_segment" },
+        "mode": { "enum": ["in", "in_out", "out"] },
+        "name": { "minLength": 1, "type": "string" },
+        "position": { "maximum": 2147483647, "minimum": 0, "type": "integer" },
+        "type": { "$ref": "#/$defs/generic_type_ref" }
+      },
+      "required": ["canonical_name", "mode", "name", "position", "type"],
+      "type": "object"
+    },
+    "callable_profile": {
+      "additionalProperties": false,
+      "properties": {
+        "parameters": {
+          "items": { "$ref": "#/$defs/callable_parameter" },
+          "type": "array"
+        },
+        "result": {
+          "oneOf": [
+            { "$ref": "#/$defs/generic_type_ref" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["parameters", "result"],
+      "type": "object"
+    },
+    "boolean_fact": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "detail": { "type": "string" },
+            "status": { "const": "known" },
+            "value": { "$ref": "#/$defs/boolean_value" }
+          },
+          "required": ["detail", "status", "value"],
+          "type": "object"
+        },
+        { "$ref": "#/$defs/imprecise_fact" }
+      ]
+    },
+    "boolean_value": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "boolean" },
+        "value": { "type": "boolean" }
+      },
+      "required": ["kind", "value"],
+      "type": "object"
+    },
+    "decimal_integer_fact": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "detail": { "type": "string" },
+            "status": { "const": "known" },
+            "value": { "$ref": "#/$defs/decimal_integer_value" }
+          },
+          "required": ["detail", "status", "value"],
+          "type": "object"
+        },
+        { "$ref": "#/$defs/imprecise_fact" }
+      ]
+    },
+    "decimal_integer_value": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "decimal_integer" },
+        "value": { "$ref": "#/$defs/decimal_integer" }
+      },
+      "required": ["kind", "value"],
+      "type": "object"
+    },
+    "exact_rational_fact": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "detail": { "type": "string" },
+            "status": { "const": "known" },
+            "value": { "$ref": "#/$defs/exact_rational_value" }
+          },
+          "required": ["detail", "status", "value"],
+          "type": "object"
+        },
+        { "$ref": "#/$defs/imprecise_fact" }
+      ]
+    },
+    "exact_rational_value": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "exact_rational" },
+        "value": { "$ref": "#/$defs/exact_rational" }
+      },
+      "required": ["kind", "value"],
+      "type": "object"
+    },
+    "imprecise_fact": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": { "pattern": "^[a-z][a-z0-9_.-]*$", "type": "string" },
+            "detail": { "type": "string" },
+            "status": { "const": "unknown" }
+          },
+          "required": ["code", "detail", "status"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": { "pattern": "^[a-z][a-z0-9_.-]*$", "type": "string" },
+            "detail": { "type": "string" },
+            "status": { "const": "unsupported" }
+          },
+          "required": ["code", "detail", "status"],
+          "type": "object"
+        }
+      ]
+    },
+    "decimal_integer": {
+      "pattern": "^(0|-?[1-9][0-9]*)$",
+      "type": "string"
+    },
+    "declaration": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_name": { "$ref": "#/$defs/canonical_name" },
+        "declaration_form": {
+          "enum": [
+            "class_wide",
+            "derived",
+            "incomplete",
+            "private",
+            "subtype",
+            "type"
+          ]
+        },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "display_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "facts": {
+          "additionalProperties": false,
+          "properties": {
+            "abstract": { "$ref": "#/$defs/boolean_fact" },
+            "class_wide": { "$ref": "#/$defs/boolean_fact" },
+            "contains_access": { "$ref": "#/$defs/boolean_fact" },
+            "contains_controlled": { "$ref": "#/$defs/boolean_fact" },
+            "controlled": { "$ref": "#/$defs/boolean_fact" },
+            "definite": { "$ref": "#/$defs/boolean_fact" },
+            "limited": { "$ref": "#/$defs/boolean_fact" },
+            "protected": { "$ref": "#/$defs/boolean_fact" },
+            "tagged": { "$ref": "#/$defs/boolean_fact" },
+            "task": { "$ref": "#/$defs/boolean_fact" }
+          },
+          "required": [
+            "abstract", "class_wide", "contains_access",
+            "contains_controlled", "controlled", "definite", "limited",
+            "protected", "tagged", "task"
+          ],
+          "type": "object"
+        },
+        "location": {
+          "$ref": "#/$defs/location"
+        },
+        "references": {
+          "items": {
+            "$ref": "#/$defs/named_ref"
+          },
+          "type": "array"
+        },
+        "related_view_ids": {
+          "items": { "$ref": "#/$defs/semantic_id" },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "shape": {
+          "$ref": "#/$defs/type_shape"
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "view": {
+          "enum": [
+            "class_wide",
+            "full",
+            "incomplete",
+            "private",
+            "public"
+          ]
+        },
+        "view_access": {
+          "additionalProperties": false,
+          "properties": {
+            "consumer_can_name_components": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "representation_available": {
+              "$ref": "#/$defs/boolean_fact"
+            }
+          },
+          "required": [
+            "consumer_can_name_components",
+            "representation_available"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "canonical_name",
+        "declaration_form",
+        "declaration_order",
+        "display_name",
+        "facts",
+        "location",
+        "references",
+        "related_view_ids",
+        "shape",
+        "stable_id",
+        "view",
+        "view_access"
+      ],
+      "type": "object"
+    },
+    "default_value": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "present": {
+              "const": false
+            }
+          },
+          "required": [
+            "present"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "expression": {
+              "$ref": "#/$defs/expression"
+            },
+            "present": {
+              "const": true
+            },
+            "static_value": {
+              "oneOf": [
+                { "$ref": "#/$defs/fact" },
+                { "type": "null" }
+              ]
+            },
+            "staticness": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "expression",
+            "present",
+            "staticness",
+            "static_value",
+            "syntax"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "discriminant": {
+      "additionalProperties": false,
+      "properties": {
+        "aliased": { "$ref": "#/$defs/boolean_fact" },
+        "canonical_name": { "$ref": "#/$defs/canonical_segment" },
+        "constant": { "$ref": "#/$defs/boolean_fact" },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "default": {
+          "$ref": "#/$defs/default_value"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "owner_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "type": {
+          "$ref": "#/$defs/type_ref"
+        }
+      },
+      "required": [
+        "aliased",
+        "canonical_name",
+        "constant",
+        "declaration_order",
+        "default",
+        "name",
+        "owner_id",
+        "stable_id",
+        "type"
+      ],
+      "type": "object"
+    },
+    "discriminant_association": {
+      "additionalProperties": false,
+      "properties": {
+        "discriminant_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "expression": {
+          "$ref": "#/$defs/expression"
+        },
+        "static_value": {
+          "oneOf": [
+            { "$ref": "#/$defs/fact" },
+            { "type": "null" }
+          ]
+        },
+        "staticness": {
+          "$ref": "#/$defs/boolean_fact"
+        }
+      },
+      "required": [
+        "discriminant_id",
+        "expression",
+        "static_value",
+        "staticness"
+      ],
+      "type": "object"
+    },
+    "entity": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "entity_kind": { "const": "generic_formal" }
+            },
+            "required": ["entity_kind"]
+          },
+          "then": {
+            "properties": {
+              "formal_kind": {
+                "enum": ["object", "package", "subprogram", "type"]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "formal_kind": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "oneOf": [
+              {
+                "properties": { "entity_kind": { "const": "subprogram" } },
+                "required": ["entity_kind"]
+              },
+              {
+                "properties": { "formal_kind": { "const": "subprogram" } },
+                "required": ["formal_kind"]
+              }
+            ]
+          },
+          "then": {
+            "properties": { "callable_profile": { "$ref": "#/$defs/callable_profile" } }
+          },
+          "else": {
+            "properties": { "callable_profile": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "formal_kind": { "const": "object" }
+            },
+            "required": ["formal_kind"]
+          },
+          "then": {
+            "properties": {
+              "type": { "$ref": "#/$defs/type_ref" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "entity_kind": { "const": "object" } },
+            "required": ["entity_kind"]
+          },
+          "then": {
+            "properties": { "type": { "$ref": "#/$defs/type_ref" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "formal_kind": { "const": "package" } },
+            "required": ["formal_kind"]
+          },
+          "then": {
+            "properties": { "formal_template_id": { "$ref": "#/$defs/semantic_id" } }
+          },
+          "else": {
+            "properties": { "formal_template_id": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "formal_kind": { "const": "package" } },
+            "required": ["formal_kind"]
+          },
+          "then": {
+            "properties": { "formal_package_contract": { "const": "box_only" } }
+          },
+          "else": {
+            "properties": { "formal_package_contract": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "formal_kind": { "const": "type" } },
+            "required": ["formal_kind"]
+          },
+          "then": {
+            "properties": {
+              "formal_type_contract": { "const": "signed_integer_range" }
+            }
+          },
+          "else": {
+            "properties": { "formal_type_contract": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "formal_kind": { "const": "object" } },
+            "required": ["formal_kind"]
+          },
+          "then": {
+            "properties": { "object_mode": { "enum": ["in", "in_out"] } }
+          },
+          "else": {
+            "properties": { "object_mode": { "type": "null" } }
+          }
+        }
+      ],
+      "properties": {
+        "callable_profile": {
+          "oneOf": [
+            { "$ref": "#/$defs/callable_profile" },
+            { "type": "null" }
+          ]
+        },
+        "canonical_name": { "$ref": "#/$defs/canonical_name" },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "display_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "entity_kind": {
+          "enum": [
+            "generic_formal",
+            "generic_template",
+            "object",
+            "package",
+            "subprogram"
+          ]
+        },
+        "formal_kind": {
+          "oneOf": [
+            {
+              "enum": ["object", "package", "subprogram", "type"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formal_package_contract": {
+          "oneOf": [
+            { "const": "box_only" },
+            { "type": "null" }
+          ]
+        },
+        "formal_template_id": {
+          "oneOf": [
+            { "$ref": "#/$defs/semantic_id" },
+            { "type": "null" }
+          ]
+        },
+        "formal_type_contract": {
+          "oneOf": [
+            { "const": "signed_integer_range" },
+            { "type": "null" }
+          ]
+        },
+        "instantiated_template_id": {
+          "oneOf": [
+            { "$ref": "#/$defs/semantic_id" },
+            { "type": "null" }
+          ]
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "owner_id": {
+          "oneOf": [
+            { "$ref": "#/$defs/semantic_id" },
+            { "type": "null" }
+          ]
+        },
+        "object_mode": {
+          "oneOf": [
+            { "enum": ["in", "in_out"] },
+            { "type": "null" }
+          ]
+        },
+        "type": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/type_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "callable_profile",
+        "canonical_name",
+        "declaration_order",
+        "display_name",
+        "entity_kind",
+        "formal_kind",
+        "formal_package_contract",
+        "formal_template_id",
+        "formal_type_contract",
+        "instantiated_template_id",
+        "owner_id",
+        "object_mode",
+        "stable_id",
+        "type"
+      ],
+      "type": "object"
+    },
+    "extension_value": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "string" },
+        {
+          "items": { "$ref": "#/$defs/extension_value" },
+          "type": "array"
+        },
+        {
+          "additionalProperties": { "$ref": "#/$defs/extension_value" },
+          "type": "object"
+        }
+      ]
+    },
+    "enum_literal": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_name": { "$ref": "#/$defs/canonical_segment" },
+        "declaration_order": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "owner_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "position": {
+          "$ref": "#/$defs/decimal_integer"
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        }
+      },
+      "required": [
+        "canonical_name",
+        "declaration_order",
+        "name",
+        "owner_id",
+        "position",
+        "stable_id"
+      ],
+      "type": "object"
+    },
+    "exact_rational": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "pattern": "^[1-9][0-9]*$",
+          "type": "string"
+        },
+        "numerator": {
+          "$ref": "#/$defs/decimal_integer"
+        }
+      },
+      "required": [
+        "denominator",
+        "numerator"
+      ],
+      "type": "object"
+    },
+    "expression": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "boolean_literal" },
+            "syntax": { "minLength": 1, "type": "string" },
+            "value": { "type": "boolean" }
+          },
+          "required": ["kind", "syntax", "value"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "character_literal" },
+            "resolved_type_id": { "$ref": "#/$defs/semantic_id" },
+            "syntax": { "minLength": 1, "type": "string" },
+            "value": { "minLength": 1, "maxLength": 1, "type": "string" }
+          },
+          "required": ["kind", "resolved_type_id", "syntax", "value"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "integer_literal"
+            },
+            "syntax": { "minLength": 1, "type": "string" },
+            "value": {
+              "$ref": "#/$defs/decimal_integer"
+            }
+          },
+          "required": [
+            "kind",
+            "syntax",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "decimal_literal"
+            },
+            "syntax": { "minLength": 1, "type": "string" },
+            "value": {
+              "$ref": "#/$defs/exact_rational"
+            }
+          },
+          "required": [
+            "kind",
+            "syntax",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "declaration_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "kind": {
+              "const": "declaration_ref"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "declaration_id",
+            "kind",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "unary"
+            },
+            "operand_type_id": { "$ref": "#/$defs/semantic_id" },
+            "operand": {
+              "$ref": "#/$defs/expression"
+            },
+            "operator": {
+              "enum": [
+                "+",
+                "-",
+                "abs",
+                "not"
+              ]
+            },
+            "operator_resolution": { "const": "predefined" },
+            "result_type_id": { "$ref": "#/$defs/semantic_id" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "kind",
+            "operand",
+            "operand_type_id",
+            "operator",
+            "operator_resolution",
+            "result_type_id",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "binary"
+            },
+            "left": {
+              "$ref": "#/$defs/expression"
+            },
+            "left_type_id": { "$ref": "#/$defs/semantic_id" },
+            "operator": {
+              "enum": [
+                "!=",
+                "*",
+                "**",
+                "+",
+                "-",
+                "/",
+                "<",
+                "<=",
+                "=",
+                ">",
+                ">=",
+                "and",
+                "mod",
+                "or",
+                "rem",
+                "xor"
+              ]
+            },
+            "operator_resolution": { "const": "predefined" },
+            "result_type_id": { "$ref": "#/$defs/semantic_id" },
+            "right": {
+              "$ref": "#/$defs/expression"
+            },
+            "right_type_id": { "$ref": "#/$defs/semantic_id" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "kind",
+            "left",
+            "left_type_id",
+            "operator",
+            "operator_resolution",
+            "result_type_id",
+            "right",
+            "right_type_id",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "arguments": {
+              "items": { "$ref": "#/$defs/expression" },
+              "type": "array"
+            },
+            "attribute": {
+              "enum": [
+                "first",
+                "last",
+                "length",
+                "pos",
+                "pred",
+                "succ",
+                "val"
+              ]
+            },
+            "kind": {
+              "const": "attribute"
+            },
+            "prefix": {
+              "$ref": "#/$defs/expression"
+            },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": [
+            "arguments",
+            "attribute",
+            "kind",
+            "prefix",
+            "syntax"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "string_literal"
+            },
+            "syntax": { "minLength": 1, "type": "string" },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "syntax",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["qualified", "type_conversion"] },
+            "operand": { "$ref": "#/$defs/expression" },
+            "syntax": { "minLength": 1, "type": "string" },
+            "target_subtype": { "$ref": "#/$defs/type_ref" }
+          },
+          "required": ["kind", "operand", "syntax", "target_subtype"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "arguments": {
+              "items": { "$ref": "#/$defs/expression" },
+              "type": "array"
+            },
+            "kind": { "const": "function_call" },
+            "resolved_subprogram_id": { "$ref": "#/$defs/semantic_id" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": ["arguments", "kind", "resolved_subprogram_id", "syntax"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "selected_component" },
+            "prefix": { "$ref": "#/$defs/expression" },
+            "selector_id": { "$ref": "#/$defs/semantic_id" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": ["kind", "prefix", "selector_id", "syntax"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "indices": {
+              "items": { "$ref": "#/$defs/expression" },
+              "minItems": 1,
+              "type": "array"
+            },
+            "kind": { "const": "indexed_component" },
+            "prefix": { "$ref": "#/$defs/expression" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": ["indices", "kind", "prefix", "syntax"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "feature_code": {
+              "pattern": "^[a-z][a-z0-9_.-]*$",
+              "type": "string"
+            },
+            "kind": { "const": "unsupported" },
+            "syntax": { "minLength": 1, "type": "string" }
+          },
+          "required": ["feature_code", "kind", "syntax"],
+          "type": "object"
+        }
+      ]
+    },
+    "fact": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "detail": {
+              "type": "string"
+            },
+            "status": {
+              "const": "known"
+            },
+            "value": {
+              "$ref": "#/$defs/typed_value"
+            }
+          },
+          "required": [
+            "detail",
+            "status",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z][a-z0-9_.-]*$",
+              "type": "string"
+            },
+            "detail": {
+              "type": "string"
+            },
+            "status": {
+              "const": "unknown"
+            }
+          },
+          "required": [
+            "code",
+            "detail",
+            "status"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z][a-z0-9_.-]*$",
+              "type": "string"
+            },
+            "detail": {
+              "type": "string"
+            },
+            "status": {
+              "const": "unsupported"
+            }
+          },
+          "required": [
+            "code",
+            "detail",
+            "status"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "generic_actual_fact": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": { "type": "string" },
+        "status": { "const": "known" },
+        "value": {
+          "oneOf": [
+            { "$ref": "#/$defs/boolean_value" },
+            { "$ref": "#/$defs/decimal_integer_value" },
+            { "$ref": "#/$defs/exact_rational_value" },
+            { "$ref": "#/$defs/text_value" }
+          ]
+        }
+      },
+      "required": ["detail", "status", "value"],
+      "type": "object"
+    },
+    "generic_type_ref": {
+      "additionalProperties": false,
+      "properties": {
+        "constraint": {
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "none" } },
+          "required": ["kind"],
+          "type": "object"
+        },
+        "declaration_id": { "$ref": "#/$defs/semantic_id" }
+      },
+      "required": ["constraint", "declaration_id"],
+      "type": "object"
+    },
+    "generic_actual": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "declaration_order": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "formal_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "formal_canonical_name": { "$ref": "#/$defs/canonical_segment" },
+            "formal_name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "instance_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "template_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "kind": {
+              "const": "type"
+            },
+            "origin": {
+              "enum": [
+                "default",
+                "named",
+                "positional"
+              ]
+            },
+            "stable_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "value": {
+              "$ref": "#/$defs/generic_type_ref"
+            }
+          },
+          "required": [
+            "declaration_order",
+            "formal_id",
+            "formal_canonical_name",
+            "formal_name",
+            "instance_id",
+            "template_id",
+            "kind",
+            "origin",
+            "stable_id",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "declaration_order": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "formal_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "formal_canonical_name": { "$ref": "#/$defs/canonical_segment" },
+            "formal_name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "instance_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "template_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "kind": {
+              "const": "object"
+            },
+            "origin": {
+              "enum": [
+                "default",
+                "named",
+                "positional"
+              ]
+            },
+            "stable_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "value_id": {
+              "$ref": "#/$defs/semantic_id"
+            }
+          },
+          "required": [
+            "declaration_order",
+            "formal_id",
+            "formal_canonical_name",
+            "formal_name",
+            "instance_id",
+            "template_id",
+            "kind",
+            "origin",
+            "stable_id",
+            "value_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "declaration_order": { "maximum": 2147483647, "minimum": 0, "type": "integer" },
+            "formal_id": { "$ref": "#/$defs/semantic_id" },
+            "formal_canonical_name": { "$ref": "#/$defs/canonical_segment" },
+            "formal_name": { "minLength": 1, "type": "string" },
+            "instance_id": { "$ref": "#/$defs/semantic_id" },
+            "template_id": { "$ref": "#/$defs/semantic_id" },
+            "kind": { "const": "value" },
+            "origin": { "enum": ["default", "named", "positional"] },
+            "stable_id": { "$ref": "#/$defs/semantic_id" },
+            "value": { "$ref": "#/$defs/generic_actual_fact" }
+          },
+          "required": [
+            "declaration_order", "formal_id", "formal_canonical_name",
+            "formal_name", "instance_id", "template_id", "kind", "origin",
+            "stable_id", "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "declaration_order": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "formal_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "formal_canonical_name": { "$ref": "#/$defs/canonical_segment" },
+            "formal_name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "instance_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "template_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "kind": {
+              "enum": [
+                "package",
+                "subprogram"
+              ]
+            },
+            "origin": {
+              "enum": [
+                "default",
+                "named",
+                "positional"
+              ]
+            },
+            "stable_id": {
+              "$ref": "#/$defs/semantic_id"
+            },
+            "value_id": {
+              "$ref": "#/$defs/semantic_id"
+            }
+          },
+          "required": [
+            "declaration_order",
+            "formal_id",
+            "formal_canonical_name",
+            "formal_name",
+            "instance_id",
+            "template_id",
+            "kind",
+            "origin",
+            "stable_id",
+            "value_id"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "location": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "unit_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "column",
+        "file",
+        "line",
+        "unit_name"
+      ],
+      "type": "object"
+    },
+    "named_ref": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "oneOf": [
+            { "type": "null" },
+            { "minLength": 1, "type": "string" }
+          ]
+        },
+        "role": {
+          "enum": [
+            "base_subtype",
+            "parent_type"
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/type_ref"
+        }
+      },
+      "required": [
+        "label",
+        "role",
+        "target"
+      ],
+      "type": "object"
+    },
+    "semantic_id": {
+      "pattern": "^decl:(?:[a-z0-9_.=,\\[\\]#:-]|%[0-9a-f]{2})+#(class_wide|full|incomplete|private|public)$",
+      "type": "string"
+    },
+    "selected_source": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": { "pattern": "^[a-f0-9]{64}$", "type": "string" },
+        "logical_name": { "minLength": 1, "type": "string" },
+        "source_kind": { "enum": ["body", "spec", "subunit"] },
+        "unit_name": { "minLength": 1, "type": "string" }
+      },
+      "required": ["content_digest", "logical_name", "source_kind", "unit_name"],
+      "type": "object"
+    },
+    "source_digest": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "logical_name": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_digest",
+        "logical_name"
+      ],
+      "type": "object"
+    },
+    "text_value": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "text" },
+        "value": { "type": "string" }
+      },
+      "required": ["kind", "value"],
+      "type": "object"
+    },
+    "type_ref": {
+      "additionalProperties": false,
+      "properties": {
+        "constraint": {
+          "$ref": "#/$defs/constraint"
+        },
+        "declaration_id": {
+          "$ref": "#/$defs/semantic_id"
+        }
+      },
+      "required": [
+        "constraint",
+        "declaration_id"
+      ],
+      "type": "object"
+    },
+    "type_shape": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "boolean_scalar"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "kind",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "character_scalar"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "kind",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "signed_scalar"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "kind",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "modular_scalar"
+            },
+            "modulus": {
+              "$ref": "#/$defs/decimal_integer_fact"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "kind",
+            "modulus",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "digits": {
+              "$ref": "#/$defs/decimal_integer_fact"
+            },
+            "digits_constraint": { "$ref": "#/$defs/constraint" },
+            "kind": {
+              "const": "floating_scalar"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "digits_constraint",
+            "digits",
+            "kind",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "delta_constraint": { "$ref": "#/$defs/constraint" },
+            "delta": {
+              "$ref": "#/$defs/exact_rational_fact"
+            },
+            "digits": {
+              "$ref": "#/$defs/decimal_integer_fact"
+            },
+            "digits_constraint": { "$ref": "#/$defs/constraint" },
+            "kind": {
+              "const": "decimal_fixed_scalar"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            },
+            "small": {
+              "$ref": "#/$defs/exact_rational_fact"
+            }
+          },
+          "required": [
+            "delta_constraint",
+            "delta",
+            "digits_constraint",
+            "digits",
+            "kind",
+            "predicate",
+            "range",
+            "small"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "delta_constraint": { "$ref": "#/$defs/constraint" },
+            "delta": { "$ref": "#/$defs/exact_rational_fact" },
+            "kind": { "const": "ordinary_fixed_scalar" },
+            "predicate": { "$ref": "#/$defs/boolean_fact" },
+            "range": { "$ref": "#/$defs/constraint" },
+            "small": { "$ref": "#/$defs/exact_rational_fact" }
+          },
+          "required": ["delta", "delta_constraint", "kind", "predicate", "range", "small"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "enumeration"
+            },
+            "literal_ids": {
+              "items": {
+                "$ref": "#/$defs/semantic_id"
+              },
+              "type": "array"
+            },
+            "predicate": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "range": {
+              "$ref": "#/$defs/constraint"
+            }
+          },
+          "required": [
+            "kind",
+            "literal_ids",
+            "predicate",
+            "range"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "component_type": {
+              "$ref": "#/$defs/type_ref"
+            },
+            "constrained": {
+              "$ref": "#/$defs/boolean_fact"
+            },
+            "dimensions": {
+              "items": {
+                "$ref": "#/$defs/array_dimension"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "kind": {
+              "const": "array"
+            },
+            "rank": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "component_type",
+            "constrained",
+            "dimensions",
+            "kind",
+            "rank"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "constraint": { "$ref": "#/$defs/constraint" },
+            "kind": {
+              "const": "record"
+            }
+          },
+          "required": [
+            "constraint",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "interface"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "designated_subtype": {
+              "$ref": "#/$defs/type_ref"
+            },
+            "kind": {
+              "const": "access"
+            },
+            "null_exclusion": {
+              "$ref": "#/$defs/boolean_fact"
+            }
+          },
+          "required": [
+            "designated_subtype",
+            "kind",
+            "null_exclusion"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "opaque"
+            },
+            "reason": {
+              "enum": [
+                "class_wide",
+                "incomplete",
+                "private",
+                "protected",
+                "task"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "typed_value": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "decimal_integer"
+            },
+            "value": {
+              "$ref": "#/$defs/decimal_integer"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "exact_rational"
+            },
+            "value": {
+              "$ref": "#/$defs/exact_rational"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "expression"
+            },
+            "value": {
+              "$ref": "#/$defs/expression"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "text"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "variant": {
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "choices": {
+                "items": {
+                  "$ref": "#/$defs/choice"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "component_ids": {
+                "items": {
+                  "$ref": "#/$defs/semantic_id"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "declaration_order": {
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "nested_variant_id": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/semantic_id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stable_id": {
+                "$ref": "#/$defs/semantic_id"
+              }
+            },
+            "required": [
+              "choices",
+              "component_ids",
+              "declaration_order",
+              "nested_variant_id",
+              "stable_id"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "owner_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "parent_alternative_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/semantic_id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selector_discriminant_id": {
+          "$ref": "#/$defs/semantic_id"
+        },
+        "stable_id": {
+          "$ref": "#/$defs/semantic_id"
+        }
+      },
+      "required": [
+        "alternatives",
+        "owner_id",
+        "parent_alternative_id",
+        "selector_discriminant_id",
+        "stable_id"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://flyology.dev/schema/type-ir-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "annotations": {
+      "items": {
+        "$ref": "#/$defs/annotation"
+      },
+      "type": "array"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/component"
+      },
+      "type": "array"
+    },
+    "context": {
+      "$ref": "#/$defs/context"
+    },
+    "declarations": {
+      "items": {
+        "$ref": "#/$defs/declaration"
+      },
+      "type": "array"
+    },
+    "discriminants": {
+      "items": {
+        "$ref": "#/$defs/discriminant"
+      },
+      "type": "array"
+    },
+    "entities": {
+      "items": {
+        "$ref": "#/$defs/entity"
+      },
+      "type": "array"
+    },
+    "enum_literals": {
+      "items": {
+        "$ref": "#/$defs/enum_literal"
+      },
+      "type": "array"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/extension_value"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z0-9.-]+/[a-z0-9._-]+$"
+      },
+      "type": "object"
+    },
+    "generic_actuals": {
+      "items": {
+        "$ref": "#/$defs/generic_actual"
+      },
+      "type": "array"
+    },
+    "ir_version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "optional_features": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "required_features": {
+      "items": {
+        "enum": [
+          "ada-type-ir/core",
+          "ada-type-ir/decimal-strings",
+          "ada-type-ir/exact-variants",
+          "ada-type-ir/graph-refs",
+          "ada-type-ir/typed-shapes"
+        ]
+      },
+      "minItems": 5,
+      "maxItems": 5,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/variant"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "annotations",
+    "components",
+    "context",
+    "declarations",
+    "discriminants",
+    "entities",
+    "enum_literals",
+    "extensions",
+    "generic_actuals",
+    "ir_version",
+    "optional_features",
+    "required_features",
+    "variants"
+  ],
+  "title": "Flyology Ada Type IR v1",
+  "type": "object"
+}
