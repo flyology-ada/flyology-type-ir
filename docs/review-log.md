@@ -4,6 +4,46 @@ All reviews were performed independently from implementation. P0/P1 findings
 block completion; P2 findings are fixed unless an accepted rationale is listed.
 No rationale exceptions are currently used.
 
+## Process-owned extraction and shared loader milestone
+
+The independent architecture pass required a process-owned strict capability
+instead of caller-writable legality fields, a closed first LAL allowlist,
+A/B/C input snapshots, complete runtime-source identity, and an installed
+policy-free loader/attestation boundary. The implementation adds the exact
+26.0.0 LAL probe, GNAT-first orchestrator, canonical production audit fixture,
+same-read loader, immutable graph indexes, and scoped exact-byte
+`AttestedChecker`.
+
+Wire and serde independently found concrete duplication only in lock/digest
+attestation, isolated checker loading, same-read validation, immutable lookup,
+and diagnostics. Overlay/lowering/Ada naming remain consumer-owned. Final
+independent review found no P0. Its P1 findings covered mismatched project/tool/
+probe identity, incomplete closure and time-of-check snapshots, caller-forgeable
+strict authority, mutable retained models, incomplete checkout/package
+attestation, missing directory/mode/symlink identity, a mutable GMP path chain,
+an extensible PATH, bytecode substitution, stale in-memory checker/schema
+identity, and a reference-host audit comparison that could not survive clone
+relocation. P2 findings covered insufficient negative tests for link/mode drift,
+temporary-directory lifetime, and wording that overstated the installed
+extractor surface.
+
+Resolution: production strict is granted only by the owned transaction; the
+reviewed project/source/configuration and complete Python/Ada boundary are
+byte-pinned and snapshotted; toolchain and runtime trees retain directories,
+modes, symlink targets, and content; PATH is exactly the approved GPRbuild/GNAT
+pair; the native dependency path is checked before, during, and after analysis;
+subprocesses are bounded; the checker is compile/exec-loaded from exact bytes
+with explicit schema/source identities; retained documents and indexes are
+recursively immutable; scoped attestation proves commit, origin, blob mode,
+resource bytes, and cleanup lifetime; and relocation testing replaces only
+three documented host-root prefixes before recomputing path-sensitive audit
+digests and exact-comparing every other byte. Negative regressions exercise
+each boundary. The root build, nested AUnit and legality suite, schema checker,
+Python API, bit-reproducible wheel builds under a fixed `SOURCE_DATE_EPOCH`,
+successful sdist builds and isolated installation, APM audit, and the real
+production extractor integration all pass. The synchronized-checkout rebuild
+and integration are the final post-push relocation gate.
+
 ## Architecture review
 
 The independent architecture pass found two P0s: strict admissibility could not

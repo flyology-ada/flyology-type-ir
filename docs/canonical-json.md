@@ -53,6 +53,16 @@ identifiers. Consumers must never use the full-document byte hash as a semantic
 fingerprint. Consequently whitespace, casing, file movement, diagnostic wording,
 and equivalent source formatting do not change the semantic projection.
 
+`fixtures/production-extraction.json` is canonical output from the reference
+host's process-owned transaction. Its audit context intentionally contains
+absolute compiler, runtime, project, and source paths, so the full document is
+not a portable attestation. Portable golden comparison uses its semantic
+projection/fingerprint plus a full audit comparison that replaces only the
+checkout, GPRbuild, and GNAT host-root prefixes with documented fixed
+placeholders and recomputes the two path-sensitive audit digests. Every other
+audit byte remains exact. Each host reruns `extract_checked` for its own exact
+production tuple.
+
 The effective-project `closure_digest` is lowercase SHA-256 over canonical JSON
 (including the final LF) of exactly these keys: `accessibility_context`,
 `canonical_gpr_path`, `compiler_identity`, `compiler_switches`,
@@ -88,16 +98,17 @@ codecs, including the source-independent semantic projection. Version 1
 intentionally ships no permissive handwritten parser. The
 schema, canonical byte fixtures, rejection mutants, and exact codec contract
 form the stable seam until a duplicate-key-aware implementation is added.
-The maintained dependency-free Python loader is the executable interchange
-gate: `python3 scripts/check_fixtures.py --structural FILE` audits a canonical
-document, while `--strict FILE` applies production consumer admissibility and
-currently rejects every document until verified legality attestation exists.
+The maintained dependency-free Python loader is installed as
+`flyology_type_ir`. `load_checked(path, profile)` returns a `CheckedDocument`
+holding the exact parsed-and-validated model, canonical semantic-projection
+bytes, their lowercase SHA-256 fingerprint, and the source-byte digest.
+Consumers lower from that retained model or its recursive immutable
+`index_checked` graph; they do not reopen the path after validation. Profiles
+are `structural`, document-only `strict`, and test-only `fixture_shape`.
 
-The same-read Python API is
-`scripts.check_fixtures.load_checked(path, profile)`. It returns a
-`CheckedDocument` holding the exact parsed-and-validated model, canonical
-semantic-projection bytes, their lowercase SHA-256 fingerprint, and the source
-byte digest. Consumers lower from that retained `document`; they do not reopen
-the path after validation. Profiles are `structural`, production `strict`, and
-test-only `fixture_shape`. Only `fixture_shape` admits synthetic provenance,
-and it still applies every strict semantic-shape check.
+Only `fixture_shape` admits synthetic provenance. Document-only `strict`
+rejects extraction provenance because JSON cannot attest its own legality.
+`flyology_type_ir.extractor.extract_checked(request)` is the production entry
+point: it returns profile `strict` only after owning GNAT legality, unchanged
+input snapshots, exact LAL traversal, canonical bytes, and validation in the
+same invocation.

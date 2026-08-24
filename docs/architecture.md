@@ -38,16 +38,34 @@ The legality command is a typed audit record containing argv, working directory,
 sorted environment, and tool identity. Its fingerprint is recomputed from
 canonical JSON bytes, but this caller-writable digest is not an attestation.
 `context_kind: extraction` requires absolute compiler and root-project paths.
-Until the extractor supplies a verified legality attestation binding the exact
-project/scenario/target/runtime/compiler tuple, v1 `Strict_Consumer` rejects
-extraction contexts as well as ordinary synthetic fixtures. This deliberately
-leaves no production-admissible document while the extractor is fail-closed.
-`context_kind: fixture` uses repository-logical paths and the integrated GNAT
-legality action; it keeps golden documents honest without claiming they were
-emitted by the fail-closed extractor.
+Document-only `load_checked(path, "strict")` therefore rejects extraction
+contexts regardless of their fields. Production admission through the
+supported API is granted only by
+`extract_checked(request)`, which owns GNAT legality, the pinned LAL probe,
+canonical emission, and strict validation in one process. Consumers cannot
+manufacture this capability by editing JSON. The internal authority is an
+object identity, not a caller-writable Boolean. Python privacy is not a sandbox
+against hostile code already executing in the same interpreter, so extraction
+runs in a dedicated offline process. `context_kind: fixture` uses repository-logical
+paths and remains test-only.
 
 A stale build result never authorizes extraction. Paths and provenance live in
 the context/diagnostic section and never contribute to semantic IDs.
+
+The first enabled extraction slice is the exact public `Production_Shapes`
+fixture: two local enums, one constrained one-dimensional array, and one plain
+nonvariant record. Any extra public declaration, private part, aspect,
+discriminant, default, component qualifier, use-site constraint, unsupported
+type form, diagnostic, or resolution failure aborts without JSON. The process
+verifies a reviewed toolchain-closure lock, forces an explicit empty GNAT
+configuration, and snapshots membership plus bytes for the project, selected
+source, compiler/probe/module inputs, exact two-directory PATH, full logical
+GPRbuild/GNAT trees (entry kind, mode, symlink target, and content), native GMP
+path chain, and runtime sources/ALIs/libraries before and after every phase,
+including strict validation.
+The serialized final manifest retains every content digest and the exact
+scenario/target/runtime/compiler tuple; intermediate snapshots remain process
+evidence rather than new v1 fields.
 
 ## Accessibility and views
 
@@ -94,6 +112,16 @@ shape. Wire companion manifests remain authoritative for wire policy.
 `Flyology_Type_IR.Validation.Overlay_Replacement_Allowed` is the normative
 non-escalation check and always rejects replacement. An overlay reads the IR
 and stores policy separately; it never writes structural or visibility facts.
+
+## Shared offline loading boundary
+
+The installed Python package owns same-read `load_checked`, recursive immutable
+`index_checked`, and exact-byte `AttestedChecker`. Attestation consumes only a
+closed reviewed dependency tuple: repository, commit, IR version, exact
+required features, checker path/hash, and schema path/hash. Consumer-specific
+lock envelopes and every overlay, lowering, Ada naming, compatibility, or
+generation decision remain outside Type IR. These utilities never broaden the
+production extraction capability and are never runtime dependencies.
 
 ## Physical representation
 

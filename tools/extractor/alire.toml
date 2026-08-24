@@ -5,7 +5,7 @@ authors = ["Yurii Rashkovskii"]
 maintainers = ["Yurii Rashkovskii <yrashk@gmail.com>"]
 maintainers-logins = ["yrashk"]
 licenses = "MIT"
-executables = ["flyology_type_ir_extract"]
+executables = ["flyology_type_ir_extract", "flyology_type_ir_lal_probe"]
 
 [[depends-on]]
 flyology_type_ir = "*"

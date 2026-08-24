@@ -4,5 +4,6 @@ project Flyology_Type_IR_Extractor is
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
    for Create_Missing_Dirs use "True";
-   for Main use ("flyology_type_ir_extract.adb");
+   for Main use
+     ("flyology_type_ir_extract.adb", "flyology_type_ir_lal_probe.adb");
 end Flyology_Type_IR_Extractor;

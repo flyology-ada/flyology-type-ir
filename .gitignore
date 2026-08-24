@@ -2,6 +2,10 @@
 /lib/
 /alire/
 /config/
+/fixtures/extraction/obj/
+/build/
+/dist/
+/*.egg-info/
 **/__pycache__/
 *.pyc
 *.ali

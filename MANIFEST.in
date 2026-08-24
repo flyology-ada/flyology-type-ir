@@ -1,0 +1,13 @@
+include LICENSE
+include schema/type-ir-v1.schema.json
+include scripts/check_fixtures.py
+include fixtures/fixtures.gpr
+recursive-include fixtures/ada *.ads
+include fixtures/extraction/production_shapes.gpr
+include fixtures/extraction/src/production_shapes.ads
+include fixtures/extraction/no_config.adc
+include tools/extractor/approved-toolchain-v1.json
+include tools/extractor/alire.toml
+include tools/extractor/alire/alire.lock
+include tools/extractor/flyology_type_ir_extractor.gpr
+include tools/extractor/src/flyology_type_ir_lal_probe.adb

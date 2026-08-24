@@ -10,13 +10,16 @@ import json
 import math
 import re
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 
 if hasattr(sys, "set_int_max_str_digits"):
     sys.set_int_max_str_digits(0)
 
-ROOT = Path(__file__).resolve().parents[1]
+_PACKAGE_ROOT = Path(__file__).resolve().parent / "_root"
+ROOT = _PACKAGE_ROOT if _PACKAGE_ROOT.is_dir() else Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
 KNOWN_FEATURES = {
     "ada-type-ir/core",
@@ -42,15 +45,39 @@ TOP_KEYS = {
 }
 
 
+def freeze(value: object) -> object:
+    if isinstance(value, dict):
+        return MappingProxyType(
+            {key: freeze(child) for key, child in value.items()}
+        )
+    if isinstance(value, list):
+        return tuple(freeze(child) for child in value)
+    return value
+
+
+def thaw(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: thaw(child) for key, child in value.items()}
+    if isinstance(value, tuple):
+        return [thaw(child) for child in value]
+    return value
+
+
 @dataclass(frozen=True)
 class CheckedDocument:
     """One-read validation result; consumers must use this retained model."""
 
-    document: dict[str, object]
+    document: Mapping[str, object]
     semantic_projection: bytes
     semantic_fingerprint: str
     source_sha256: str
     profile: str
+
+
+# This identity is an internal coupling between the owned extractor transaction
+# and strict validation. It is not a security boundary against hostile code in
+# the same Python interpreter; the supported public API never exports it.
+_EXTRACTION_AUTHORITY = object()
 STRICT_DECLARATION_FACTS = {
     "abstract",
     "class_wide",
@@ -77,9 +104,9 @@ ADA_RESERVED_WORDS = {
     "synchronized", "tagged", "task", "terminate", "then", "type", "until",
     "use", "when", "while", "with", "xor",
 }
-SCHEMA = json.loads(
-    (ROOT / "schema/type-ir-v1.schema.json").read_text(encoding="utf-8")
-)
+_SCHEMA_BYTES = (ROOT / "schema/type-ir-v1.schema.json").read_bytes()
+SCHEMA_SHA256 = hashlib.sha256(_SCHEMA_BYTES).hexdigest()
+SCHEMA = json.loads(_SCHEMA_BYTES.decode("utf-8"))
 REJECTION_COUNT = 0
 
 
@@ -524,8 +551,13 @@ def walk_facts(value: object, strict: bool = False) -> None:
 
 
 def validate(
-    document: dict[str, object], strict: bool = False, *, allow_fixture: bool = False
+    document: dict[str, object],
+    strict: bool = False,
+    *,
+    allow_fixture: bool = False,
+    extraction_authority: object | None = None,
 ) -> None:
+    trusted_extraction = extraction_authority is _EXTRACTION_AUTHORITY
     if set(document) != TOP_KEYS:
         raise Rejected("unknown or missing top-level field")
     if document["ir_version"] != 1:
@@ -545,10 +577,9 @@ def validate(
     context = document["context"]
     if strict and context["context_kind"] == "fixture" and not allow_fixture:
         raise Rejected("strict production consumers reject synthetic fixture provenance")
-    if strict and context["context_kind"] == "extraction":
+    if strict and context["context_kind"] == "extraction" and not trusted_extraction:
         raise Rejected(
-            "v1 extraction contexts are not Strict_Consumer-admissible until the "
-            "extractor supplies a verified legality attestation"
+            "extraction documents require the process-owned extract_checked gate"
         )
     for key in (
         "compiler_identity",
@@ -629,17 +660,31 @@ def validate(
     project_names = {item["logical_name"] for item in effective["project_files"]}
     if context["canonical_gpr_path"] not in project_names:
         raise Rejected("effective project manifest must contain the canonical root GPR")
-    for project_file in effective["project_files"]:
-        project_path = ROOT / project_file["logical_name"]
-        if not project_path.is_file() or hashlib.sha256(project_path.read_bytes()).hexdigest() != project_file["content_digest"]:
-            raise Rejected("project-file content digest is stale")
-    for source in effective["selected_units"]:
-        source_path = ROOT / source["logical_name"]
-        if not source_path.is_file():
-            raise Rejected("selected fixture unit is missing")
-        actual_digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
-        if actual_digest != source["content_digest"]:
-            raise Rejected("selected unit content digest is stale")
+    if context["context_kind"] == "fixture" or trusted_extraction:
+        for project_file in effective["project_files"]:
+            project_path = ROOT / project_file["logical_name"]
+            if not project_path.is_file() or hashlib.sha256(project_path.read_bytes()).hexdigest() != project_file["content_digest"]:
+                raise Rejected("project-file content digest is stale")
+    if context["context_kind"] == "extraction" and trusted_extraction:
+        for manifest_name in ("configuration_pragmas", "runtime_sources"):
+            for source in effective[manifest_name]:
+                source_path = Path(source["logical_name"])
+                if not source_path.is_absolute():
+                    raise Rejected(f"extraction {manifest_name} paths must be absolute")
+                if (
+                    not source_path.is_file()
+                    or hashlib.sha256(source_path.read_bytes()).hexdigest()
+                    != source["content_digest"]
+                ):
+                    raise Rejected(f"{manifest_name} content digest is stale")
+    if context["context_kind"] == "fixture" or trusted_extraction:
+        for source in effective["selected_units"]:
+            source_path = ROOT / source["logical_name"]
+            if not source_path.is_file():
+                raise Rejected("selected fixture unit is missing")
+            actual_digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
+            if actual_digest != source["content_digest"]:
+                raise Rejected("selected unit content digest is stale")
     if effective_closure_digest(document) != effective["closure_digest"]:
         raise Rejected("effective project closure digest is stale")
 
@@ -2056,6 +2101,30 @@ def validate(
     check_rationals(semantic_document)
 
 
+def _checked_bytes(
+    raw: bytes, profile: str, *, extraction_authority: object | None = None
+) -> CheckedDocument:
+    """Validate retained bytes; document callers cannot assert extraction trust."""
+    if profile not in {"structural", "strict", "fixture_shape"}:
+        raise ValueError(f"unknown validation profile: {profile}")
+    document = parse(raw)
+    validate_schema(document, SCHEMA)
+    validate(
+        document,
+        strict=profile in {"strict", "fixture_shape"},
+        allow_fixture=profile == "fixture_shape",
+        extraction_authority=extraction_authority,
+    )
+    projection = semantic_projection(document)
+    return CheckedDocument(
+        document=freeze(document),
+        semantic_projection=projection,
+        semantic_fingerprint=hashlib.sha256(projection).hexdigest(),
+        source_sha256=hashlib.sha256(raw).hexdigest(),
+        profile=profile,
+    )
+
+
 def load_checked(path: Path, profile: str) -> CheckedDocument:
     """Read once, validate, and return that exact model plus its semantic digest.
 
@@ -2063,24 +2132,8 @@ def load_checked(path: Path, profile: str) -> CheckedDocument:
     check while admitting synthetic fixture provenance. ``strict`` is the
     production gate and currently admits no extraction document.
     """
-    if profile not in {"structural", "strict", "fixture_shape"}:
-        raise ValueError(f"unknown validation profile: {profile}")
     raw = path.read_bytes()
-    document = parse(raw)
-    validate_schema(document, SCHEMA)
-    validate(
-        document,
-        strict=profile in {"strict", "fixture_shape"},
-        allow_fixture=profile == "fixture_shape",
-    )
-    projection = semantic_projection(document)
-    return CheckedDocument(
-        document=document,
-        semantic_projection=projection,
-        semantic_fingerprint=hashlib.sha256(projection).hexdigest(),
-        source_sha256=hashlib.sha256(raw).hexdigest(),
-        profile=profile,
-    )
+    return _checked_bytes(raw, profile)
 
 def expect_rejected(name: str, operation) -> None:
     global REJECTION_COUNT
@@ -2097,11 +2150,12 @@ def main() -> None:
         raise AssertionError("arbitrary-precision decimal validation is capped")
     positive = sorted(path for path in FIXTURES.glob("*.json"))
     documents = {
-        path.name: load_checked(path, "structural").document for path in positive
+        path.name: thaw(load_checked(path, "structural").document)
+        for path in positive
     }
-    typed_document = load_checked(
-        FIXTURES / "typed-shapes.json", "fixture_shape"
-    ).document
+    typed_document = thaw(
+        load_checked(FIXTURES / "typed-shapes.json", "fixture_shape").document
+    )
     covered_shapes = {item["shape"]["kind"] for item in typed_document["declarations"]}
     required_shape_coverage = {
         "access", "array", "boolean_scalar", "character_scalar",
